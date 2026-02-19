@@ -643,6 +643,10 @@ extension OpenAIChatCompletionRequestBody {
 
         case webSearch
 
+        /// xAI's live search tool. Encodes as `{"type": "live_search"}`.
+        /// Use this instead of `webSearch` when targeting xAI's API.
+        case liveSearch
+
         /// Represents a Model Context Provider (MCP) tool integration.
         ///
         /// - Parameters:
@@ -705,6 +709,10 @@ extension OpenAIChatCompletionRequestBody {
             case .webSearch:
                 var container = encoder.container(keyedBy: RootKey.self)
                 try container.encode("web_search_preview", forKey: .type)
+
+            case .liveSearch:
+                var container = encoder.container(keyedBy: RootKey.self)
+                try container.encode("live_search", forKey: .type)
 
             case .mcp(
                 let serverLabel,
