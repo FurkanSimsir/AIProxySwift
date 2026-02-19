@@ -10,7 +10,6 @@ import Foundation
 @AIProxyActor public protocol XAIService: Sendable {
 
     /// Initiates a non-streaming chat completion request to xAI.
-    /// xAI's chat completions API is OpenAI-compatible, so this uses OpenAI request/response types.
     ///
     /// - Parameters:
     ///   - body: The chat completion request body. See this reference:
@@ -18,12 +17,11 @@ import Foundation
     ///   - secondsToWait: Seconds to wait before raising `URLError.timedOut`
     /// - Returns: A ChatCompletionResponse
     func chatCompletionRequest(
-        body: OpenAIChatCompletionRequestBody,
+        body: XAIChatCompletionRequestBody,
         secondsToWait: UInt
     ) async throws -> OpenAIChatCompletionResponseBody
 
     /// Initiates a streaming chat completion request to xAI.
-    /// xAI's chat completions API is OpenAI-compatible, so this uses OpenAI request/response types.
     ///
     /// - Parameters:
     ///   - body: The chat completion request body. See this reference:
@@ -31,7 +29,7 @@ import Foundation
     ///   - secondsToWait: Seconds to wait before raising `URLError.timedOut`
     /// - Returns: An async sequence of completion chunks
     func streamingChatCompletionRequest(
-        body: OpenAIChatCompletionRequestBody,
+        body: XAIChatCompletionRequestBody,
         secondsToWait: UInt
     ) async throws -> AsyncThrowingStream<OpenAIChatCompletionChunk, Error>
 
@@ -43,7 +41,7 @@ import Foundation
     ///   - secondsToWait: Seconds to wait before raising `URLError.timedOut`
     /// - Returns: An async sequence of response streaming events
     func createStreamingResponse(
-        body: OpenAICreateResponseRequestBody,
+        body: XAICreateResponseRequestBody,
         secondsToWait: UInt
     ) async throws -> AsyncThrowingStream<OpenAIResponseStreamingEvent, Error>
 

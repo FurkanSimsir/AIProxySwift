@@ -25,7 +25,7 @@ import Foundation
     }
 
     func chatCompletionRequest(
-        body: OpenAIChatCompletionRequestBody,
+        body: XAIChatCompletionRequestBody,
         secondsToWait: UInt
     ) async throws -> OpenAIChatCompletionResponseBody {
         var body = body
@@ -45,7 +45,7 @@ import Foundation
     }
 
     func streamingChatCompletionRequest(
-        body: OpenAIChatCompletionRequestBody,
+        body: XAIChatCompletionRequestBody,
         secondsToWait: UInt
     ) async throws -> AsyncThrowingStream<OpenAIChatCompletionChunk, Error> {
         var body = body
@@ -65,7 +65,7 @@ import Foundation
     }
 
     func createStreamingResponse(
-        body: OpenAICreateResponseRequestBody,
+        body: XAICreateResponseRequestBody,
         secondsToWait: UInt
     ) async throws -> AsyncThrowingStream<OpenAIResponseStreamingEvent, Error> {
         var body = body
