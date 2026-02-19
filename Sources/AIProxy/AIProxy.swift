@@ -927,6 +927,53 @@ public enum AIProxy {
         )
     }
 
+    /// AIProxy's xAI (Grok) service
+    ///
+    /// - Parameters:
+    ///   - partialKey: Your partial key is displayed in the AIProxy dashboard when you submit your xAI key.
+    ///     AIProxy takes your xAI key, encrypts it, and stores part of the result on our servers. The part that you include
+    ///     here is the other part. Both pieces are needed to decrypt your key and fulfill the request to xAI.
+    ///
+    ///   - serviceURL: The service URL is displayed in the AIProxy dashboard when you submit your xAI key.
+    ///
+    ///   - clientID: An optional clientID to attribute requests to specific users or devices. It is OK to leave this blank for
+    ///     most applications. You would set this if you already have an analytics system, and you'd like to annotate AIProxy
+    ///     requests with IDs that are known to other parts of your system.
+    ///
+    ///     If you do not supply your own clientID, the internals of this lib will generate UUIDs for you. The default UUIDs are
+    ///     persistent on macOS and can be accurately used to attribute all requests to the same device. The default UUIDs
+    ///     on iOS are pesistent until the end user chooses to rotate their vendor identification number.
+    ///
+    /// - Returns: An instance of XAIService configured and ready to make requests
+    nonisolated public static func xAIService(
+        partialKey: String,
+        serviceURL: String,
+        clientID: String? = nil
+    ) -> XAIService {
+        return XAIProxiedService(
+            partialKey: partialKey,
+            serviceURL: serviceURL,
+            clientID: clientID
+        )
+    }
+
+    /// Service that makes request directly to xAI. No protections are built-in for this service.
+    /// Please only use this for BYOK use cases.
+    ///
+    /// - Parameters:
+    ///   - unprotectedAPIKey: Your xAI API key
+    ///   - baseURL: Optional base URL for the API requests (defaults to https://api.x.ai)
+    /// - Returns: An instance of XAIService configured and ready to make requests
+    nonisolated public static func xAIDirectService(
+        unprotectedAPIKey: String,
+        baseURL: String? = nil
+    ) -> XAIService {
+        return XAIDirectService(
+            unprotectedAPIKey: unprotectedAPIKey,
+            baseURL: baseURL
+        )
+    }
+
     /// AIProxy's Brave service
     ///
     /// - Parameters:
