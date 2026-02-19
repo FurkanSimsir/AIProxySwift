@@ -643,9 +643,29 @@ extension OpenAIChatCompletionRequestBody {
 
         case webSearch
 
-        /// xAI's live search tool. Encodes as `{"type": "live_search"}`.
+        /// xAI's live search tool. Encodes as `{"type": "live_search", "sources": [...]}`.
         /// Use this instead of `webSearch` when targeting xAI's API.
-        case liveSearch
+        /// Pass an empty array for `sources` to search all available sources.
+        /// See: https://docs.x.ai/api/endpoints#chat-completions
+        case liveSearch(sources: [LiveSearchSource] = [])
+
+        nonisolated public struct LiveSearchSource: Encodable, Sendable {
+            public let type: String
+            public let country: String?
+            public let excludedWebsites: [String]?
+
+            public init(type: String, country: String? = nil, excludedWebsites: [String]? = nil) {
+                self.type = type
+                self.country = country
+                self.excludedWebsites = excludedWebsites
+            }
+
+            enum CodingKeys: String, CodingKey {
+                case type
+                case country
+                case excludedWebsites = "excluded_websites"
+            }
+        }
 
         /// Represents a Model Context Provider (MCP) tool integration.
         ///
@@ -679,6 +699,11 @@ extension OpenAIChatCompletionRequestBody {
             case strict
         }
 
+        private enum LiveSearchKey: CodingKey {
+            case type
+            case sources
+        }
+
         private enum MCPKey: String, CodingKey {
             case type
             case serverLabel = "server_label"
@@ -710,9 +735,10 @@ extension OpenAIChatCompletionRequestBody {
                 var container = encoder.container(keyedBy: RootKey.self)
                 try container.encode("web_search_preview", forKey: .type)
 
-            case .liveSearch:
-                var container = encoder.container(keyedBy: RootKey.self)
+            case .liveSearch(let sources):
+                var container = encoder.container(keyedBy: LiveSearchKey.self)
                 try container.encode("live_search", forKey: .type)
+                try container.encode(sources, forKey: .sources)
 
             case .mcp(
                 let serverLabel,
