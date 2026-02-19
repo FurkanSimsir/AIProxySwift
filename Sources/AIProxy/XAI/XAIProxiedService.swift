@@ -64,6 +64,25 @@ import Foundation
         return try await self.makeRequestAndDeserializeStreamingChunks(request)
     }
 
+    func createStreamingResponse(
+        body: OpenAICreateResponseRequestBody,
+        secondsToWait: UInt
+    ) async throws -> AsyncThrowingStream<OpenAIResponseStreamingEvent, Error> {
+        var body = body
+        body.stream = true
+        let request = try await AIProxyURLRequest.create(
+            partialKey: self.partialKey,
+            serviceURL: self.serviceURL,
+            clientID: self.clientID,
+            proxyPath: "/v1/responses",
+            body: try body.serialize(),
+            verb: .post,
+            secondsToWait: secondsToWait,
+            contentType: "application/json"
+        )
+        return try await self.makeRequestAndDeserializeStreamingChunks(request)
+    }
+
     func createImageRequest(
         body: XAICreateImageRequestBody,
         secondsToWait: UInt

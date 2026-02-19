@@ -35,6 +35,18 @@ import Foundation
         secondsToWait: UInt
     ) async throws -> AsyncThrowingStream<OpenAIChatCompletionChunk, Error>
 
+    /// Initiates a streaming response request to xAI's /v1/responses endpoint.
+    /// Use this for features that require the Responses API, such as web search.
+    ///
+    /// - Parameters:
+    ///   - body: The response request body
+    ///   - secondsToWait: Seconds to wait before raising `URLError.timedOut`
+    /// - Returns: An async sequence of response streaming events
+    func createStreamingResponse(
+        body: OpenAICreateResponseRequestBody,
+        secondsToWait: UInt
+    ) async throws -> AsyncThrowingStream<OpenAIResponseStreamingEvent, Error>
+
     /// Initiates an image generation request to xAI's /v1/images/generations endpoint.
     ///
     /// - Parameters:
