@@ -123,14 +123,11 @@ import Foundation
     /// Called when NSUbiquitousKeyValueStore was remotely updated.
     /// See https://developer.apple.com/library/archive/documentation/General/Conceptual/iCloudDesignGuide/Chapters/DesigningForKey-ValueDataIniCloud.html#//apple_ref/doc/uid/TP40012094-CH7-SW6
     //  See https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/UserDefaults/StoringPreferenceDatainiCloud/StoringPreferenceDatainiCloud.html
+    //  Nonisolated because UKVS posts on its own queue, where an actor-isolated @objc entry point aborts.
     @objc
-    private static func storeDidChange(_ notification: Notification) {
+    nonisolated private static func storeDidChange(_ notification: Notification) {
         guard let changedKeys = notification.userInfo?["NSUbiquitousKeyValueStoreChangedKeysKey"] as? [String],
               changedKeys.contains(kAIProxyUKVSAccount) else {
-            return
-        }
-
-        guard let resolvedAccount = self.resolvedAccount else {
             return
         }
 
@@ -138,7 +135,18 @@ import Foundation
             return
         }
 
-        switch changeReason.intValue {
+        let changeReasonValue = changeReason.intValue
+        Task { @AIProxyActor in
+            handleStoreChange(changeReason: changeReasonValue)
+        }
+    }
+
+    private static func handleStoreChange(changeReason: Int) {
+        guard let resolvedAccount = self.resolvedAccount else {
+            return
+        }
+
+        switch changeReason {
         case NSUbiquitousKeyValueStoreServerChange: logIf(.info)?.info("AIProxy account changed due to remote server change")
         case NSUbiquitousKeyValueStoreInitialSyncChange: logIf(.info)?.info("AIProxy account changed due to initial sync change")
         case NSUbiquitousKeyValueStoreQuotaViolationChange: logIf(.info)?.info("AIProxy account changed due to quota violation")
